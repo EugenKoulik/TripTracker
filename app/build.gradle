@@ -48,4 +48,6 @@ dependencies {
     implementation 'com.google.android.material:material:1.4.0'
     implementation 'com.google.android.libraries.places:places:2.4.0'
 
+    //EasyPermissions
+    implementation 'pub.devrel:easypermissions:3.0.0'
 }

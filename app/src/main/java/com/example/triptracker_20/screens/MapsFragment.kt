@@ -39,10 +39,7 @@ class MapsFragment : Fragment() {
 
         val view  = inflater.inflate(R.layout.fragment_maps, container, false)
 
-
-
         return view
-
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -52,7 +49,6 @@ class MapsFragment : Fragment() {
         mapFragment?.getMapAsync(callback)
 
         setUpMap()
-
     }
 
     private fun setUpMap() {

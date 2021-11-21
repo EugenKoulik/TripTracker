@@ -27,7 +27,7 @@
         app:layout_constraintVertical_bias="1.0"
         app:menu="@menu/nav_menu" />
 
-    <FrameLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
 
         android:id="@+id/fragment_container"
         android:layout_width="408dp"
@@ -36,8 +36,10 @@
         app:layout_constraintBaseline_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@+id/bottom_navigation"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
