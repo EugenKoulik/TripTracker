@@ -43,8 +43,20 @@ import com.google.android.gms.maps.model.Marker
 
 
 
-        return view
+class MapsFragment : Fragment(), OnMapReadyCallback, EasyPermissions.PermissionCallbacks {
 
+    private var mMap: GoogleMap? = null
+    private var mMarcadorActual: Marker? = null
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        val rootView: View = inflater.inflate(R.layout.fragment_maps, container, false)
+        val mapFragment =
+            childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
+        mapFragment!!.getMapAsync(this)
+        return rootView
     }
 
     @SuppressLint("MissingPermission")
@@ -53,9 +65,11 @@ import com.google.android.gms.maps.model.Marker
 
         requestPermissions()
 
+        //ask for permissions..
+        mMap!!.setMyLocationEnabled(true)
+        val sydney = LatLng(-34.0, 151.0)
 
-        setUpMap()
-
+        mMarcadorActual = mMap!!.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
     }
 
 
