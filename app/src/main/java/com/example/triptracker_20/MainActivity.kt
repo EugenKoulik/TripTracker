@@ -16,13 +16,9 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.OnSuccessListener
-import android.view.Window
 import android.view.WindowManager
-import androidx.fragment.app.Fragment
-import com.example.triptracker_20.screens.*
-import com.google.android.gms.maps.GoogleMap
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import java.util.jar.Manifest
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -73,7 +69,7 @@ class MainActivity : AppCompatActivity() {
         locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY)
 
         // displaying coordinates
-        coorTextView = findViewById(R.id.coorTextView)
+        //coorTextView = findViewById(R.id.coorTextView)
 
         updateGPS()
     }
