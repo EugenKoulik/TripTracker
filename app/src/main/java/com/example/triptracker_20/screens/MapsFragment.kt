@@ -1,70 +1,107 @@
 package com.example.triptracker_20.screens
 
-import androidx.fragment.app.Fragment
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import com.example.triptracker_20.R
-import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.OnMapReadyCallback
-import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
 import android.Manifest
-import android.location.Location
-import androidx.activity.result.contract.ActivityResultContracts
+import android.Manifest.permission.*
+import android.annotation.SuppressLint
+import android.content.pm.PackageManager
+import android.os.Build
+import android.os.Bundle
+import android.view.*
+import androidx.core.app.ActivityCompat
+import androidx.fragment.app.Fragment
+import com.example.triptracker_20.R
+import com.example.triptracker_20.other.Constants.Companion.REQUEST_CODE_LOCATION_PERMISSION
+import com.example.triptracker_20.other.TrackingUtility
+import pub.devrel.easypermissions.AppSettingsDialog
+import pub.devrel.easypermissions.EasyPermissions
+import com.google.android.gms.maps.*
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.CameraUpdateFactory
+
+import com.google.android.gms.maps.model.CameraPosition
+
+import com.google.android.gms.maps.model.MarkerOptions
+
+import com.google.android.gms.maps.GoogleMap
+
+import com.google.android.gms.maps.OnMapReadyCallback
+
+import com.google.android.gms.maps.MapsInitializer
+
+import com.google.android.gms.maps.MapView
+
+import android.view.ViewGroup
+
+import android.view.LayoutInflater
+import java.lang.Exception
 
 
-class MapsFragment : Fragment() {
+import android.view.View;
+import androidx.annotation.Nullable
+import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.Marker
 
-    private lateinit var lastLocation: Location
 
-    companion object {
-        private const val LOCATION_PERMISSION_REQUEST_CODE = 1
-    }
-
-    private val callback = OnMapReadyCallback { googleMap ->
-
-        val sydney = LatLng(-34.0, 151.0)
-        googleMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-
-        val view  = inflater.inflate(R.layout.fragment_maps, container, false)
 
         return view
+
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    @SuppressLint("MissingPermission")
+    override fun onMapReady(googleMap: GoogleMap) {
+        mMap = googleMap
 
-        val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
-        mapFragment?.getMapAsync(callback)
+        requestPermissions()
+
 
         setUpMap()
+
     }
 
-    private fun setUpMap() {
-        val permissionLauncher = registerForActivityResult(
-            ActivityResultContracts.RequestPermission()
-        ) { isGranted ->
-            if (isGranted) {
-                // Do if the permission is granted
-            }
-            else {
-                // Do otherwise
-            }
+
+    private fun requestPermissions() {
+        if (TrackingUtility.hasLocationPermissions(requireContext())) {
+            return
         }
-        permissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            EasyPermissions.requestPermissions(
+                this,
+                "You need to accept location permission to use this app",
+                REQUEST_CODE_LOCATION_PERMISSION,
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            )
+        } else {
+            EasyPermissions.requestPermissions(
+                this,
+                "You need to accept location permissions to use this app",
+                REQUEST_CODE_LOCATION_PERMISSION,
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION,
+                Manifest.permission.ACCESS_BACKGROUND_LOCATION
+            )
+        }
     }
 
+    override fun onPermissionsDenied(requestCode: Int, perms: MutableList<String>) {
+        if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)) {
+            AppSettingsDialog.Builder(this).setThemeResId(R.style.ThemeOverlay_MaterialComponents_Light).build().show()
+        } else {
+            requestPermissions()
+        }
+    }
 
+    override fun onPermissionsGranted(requestCode: Int, perms: MutableList<String>) {}
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this)
+    }
 
 }
+
+
