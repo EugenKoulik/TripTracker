@@ -1,6 +1,7 @@
 package com.example.triptracker_20
 
 import android.Manifest.*
+import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Build
@@ -17,13 +18,18 @@ import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.OnSuccessListener
 import android.view.WindowManager
+import com.example.triptracker_20.other.Constants.Companion.DEFAULT_UPDATE_INTERVAL
+import com.example.triptracker_20.other.Constants.Companion.FAST_UPDATE_INTERVAL
+import com.google.android.gms.location.LocationListener
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import android.location.LocationManager
 
 
-class MainActivity : AppCompatActivity() {
 
-    private val DEFAULT_UPDATE_INTERVAL = 30L
-    private val FAST_UPDATE_INTERVAL = 5L
+
+
+open class MainActivity : AppCompatActivity() {
+
     private val PERMISSIONS_FINE_LOCATION = 99
 
     private val mapsFragment = MapsFragment()
@@ -32,8 +38,8 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var fusedLocationProviderClient : FusedLocationProviderClient
     private lateinit var locationRequest: LocationRequest
-
     private lateinit var coorTextView: TextView
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,21 +61,26 @@ class MainActivity : AppCompatActivity() {
                 R.id.ic_map -> replaceFragment(mapsFragment)
                 R.id.ic_trips -> replaceFragment(tripsFragment)
             }
-
             true
-
         }
 
         locationRequest = LocationRequest()
 
-        locationRequest.setInterval(DEFAULT_UPDATE_INTERVAL * 100)
+        locationRequest.interval = DEFAULT_UPDATE_INTERVAL * 100
 
-        locationRequest.setFastestInterval(FAST_UPDATE_INTERVAL * 5)
+        locationRequest.fastestInterval = FAST_UPDATE_INTERVAL * 5
 
-        locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY)
+        locationRequest.priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
+
+    }
+
+
+    override fun onStart(){
+        super.onStart()
 
         // displaying coordinates
-        //coorTextView = findViewById(R.id.coorTextView)
+
+        coorTextView = findViewById(R.id.coorTextView)
 
         updateGPS()
     }
@@ -93,11 +104,10 @@ class MainActivity : AppCompatActivity() {
                     Toast.makeText(this, "Ну дай доступ пж", Toast.LENGTH_SHORT).show()
                     finish()
                 }
-
         }
     }
 
-
+    @SuppressLint("MissingPermission")
     private fun updateGPS(){
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
 
