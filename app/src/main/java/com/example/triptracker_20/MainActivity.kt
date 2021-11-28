@@ -26,8 +26,6 @@ import android.location.LocationManager
 
 
 
-
-
 open class MainActivity : AppCompatActivity() {
 
     private val PERMISSIONS_FINE_LOCATION = 99

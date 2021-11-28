@@ -15,12 +15,7 @@ import com.example.triptracker_20.other.TrackingUtility
 import pub.devrel.easypermissions.AppSettingsDialog
 import pub.devrel.easypermissions.EasyPermissions
 import com.google.android.gms.maps.*
-import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.CameraUpdateFactory
-
-import com.google.android.gms.maps.model.CameraPosition
-
-import com.google.android.gms.maps.model.MarkerOptions
 
 import com.google.android.gms.maps.GoogleMap
 
@@ -38,15 +33,20 @@ import java.lang.Exception
 
 import android.view.View
 import androidx.annotation.Nullable
+import com.example.triptracker_20.other.Constants.Companion.MAP_ZOOM
+import com.example.triptracker_20.other.Constants.Companion.POLYLINE_COLOR
+import com.example.triptracker_20.other.Constants.Companion.POLYLINE_WIDTH
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.Marker
-
+import com.google.android.gms.maps.model.*
 
 
 class MapsFragment : Fragment(), OnMapReadyCallback, EasyPermissions.PermissionCallbacks {
 
     private var mMap: GoogleMap? = null
     private var mMarcadorActual: Marker? = null
+    private var pathPoints = mutableListOf<MutableList<LatLng>>()
+    private var isTracking = false
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -116,5 +116,80 @@ class MapsFragment : Fragment(), OnMapReadyCallback, EasyPermissions.PermissionC
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this)
     }
+
+
+    // Will move the camera to the user's location.
+
+    private fun moveCameraToUser() {
+
+        if (pathPoints.isNotEmpty() && pathPoints.last().isNotEmpty()) {
+
+            mMap?.animateCamera(
+                CameraUpdateFactory.newLatLngZoom(
+                    pathPoints.last().last(),
+                    MAP_ZOOM
+                )
+            )
+        }
+    }
+
+
+    // Adds all polylines to the pathPoints list to display them after screen rotations
+
+    private fun addAllPolylines() {
+
+        for (polyline in pathPoints) {
+
+            val polylineOptions = PolylineOptions()
+                .color(POLYLINE_COLOR)
+                .width(POLYLINE_WIDTH)
+                .addAll(polyline)
+
+            mMap?.addPolyline(polylineOptions)
+        }
+    }
+
+    // Draws a polyline between the two latest points
+
+    private fun addLatestPolyline() {
+
+        // only add polyline if we have at least two elements in the last polyline
+
+        if (pathPoints.isNotEmpty() && pathPoints.last().size > 1) {
+
+            val preLastLatLng = pathPoints.last()[pathPoints.last().size - 2]
+
+            val lastLatLng = pathPoints.last().last()
+
+            val polylineOptions = PolylineOptions()
+                .color(POLYLINE_COLOR)
+                .width(POLYLINE_WIDTH)
+                .add(preLastLatLng)
+                .add(lastLatLng)
+
+            mMap?.addPolyline(polylineOptions)
+        }
+    }
+
+
+
+     // Updates the tracking variable and the UI accordingly
+
+    /*private fun updateTracking(isTracking: Boolean) {
+        this.isTracking = isTracking
+        if (!isTracking && curTimeInMillis > 0L) {
+            btnToggleRun.text = getString(R.string.start_text)
+            btnFinishRun.visibility = View.VISIBLE
+        } else if (isTracking) {
+            btnToggleRun.text = getString(R.string.stop_text)
+            menu?.getItem(0)?.isVisible = true
+            btnFinishRun.visibility = View.GONE
+        }
+    }*/
+
+
+
+
+
 
 }
